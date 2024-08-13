@@ -1,0 +1,48 @@
+cabal-version:      3.0
+name:               tic-tac-toe
+version:            0.1.0.0
+-- synopsis:
+-- description:
+license:            MIT
+license-file:       LICENSE
+author:             Iain McDonald
+maintainer:         iain.allan.mcdonald@protonmail.com
+-- copyright:
+category:           Game
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+library ttt
+    exposed-modules:
+    ghc-options: -Wall
+    build-depends: base ^>=4.17.2.1
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+executable tic-tac-toe
+    import:           warnings
+    main-is:          Main.hs
+    ghc-options: -Wall
+    build-depends:
+        base ^>=4.17.2.1
+      , ttt
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Driver.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-tool-depends:
+      tasty-discover:tasty-discover
+  build-depends:
+      base >=4.7 && <5
+    , tasty
+    , ttt
+  default-language: GHC2021
