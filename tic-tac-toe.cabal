@@ -17,7 +17,7 @@ common warnings
     ghc-options: -Wall
 
 library ttt
-    exposed-modules:
+    exposed-modules: Board
     ghc-options: -Wall
     build-depends: base ^>=4.17.2.1
     hs-source-dirs:   src
@@ -35,14 +35,14 @@ executable tic-tac-toe
 
 test-suite test
   type: exitcode-stdio-1.0
-  main-is: Driver.hs
+  main-is: TestRunner.hs
+  other-modules: BoardTest
   hs-source-dirs:
       test
   ghc-options: -Wall
-  build-tool-depends:
-      tasty-discover:tasty-discover
   build-depends:
       base >=4.7 && <5
     , tasty
+    , tasty-quickcheck
     , ttt
   default-language: GHC2021
