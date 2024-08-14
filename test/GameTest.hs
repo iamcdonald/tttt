@@ -1,14 +1,15 @@
 module GameTest (suite) where
 
-import Board (BoardException (..))
+import Board
 import Control.Exception (Exception, throw)
 import Data.Maybe
 import Game
 import Test.Tasty
+import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
-import Types
+import Types (Coord (..))
 
-data ShouldReturnException = ShouldReturnGame | ShouldReturnException deriving (Eq, Show)
+data ShouldReturnException = ShouldReturnBoard | ShouldReturnGame | ShouldReturnException deriving (Eq, Show)
 
 instance Exception ShouldReturnException
 
@@ -35,7 +36,10 @@ makeSuite =
         checkBoard Game {board = b} = length b == d && all (\r -> (length r) == d) b
         checkPlayer Game {player = p} = p == Game.Player1
         checkNoError Game {err} = isNothing err
-        check (Left g) = checkBoard g && checkPlayer g && checkNoError g
+        checkPlayingState Game {state = s} = s == Game.Playing
+        checkSize Game {size = s} = s == d
+        checkNoWinner Game {winner = w} = isNothing w
+        check (Left g) = checkBoard g && checkPlayer g && checkNoError g && checkPlayingState g && checkSize g && checkNoWinner g
         check (Right _) = throw ShouldReturnGame
 
     invalid :: Int -> Property
@@ -49,8 +53,14 @@ makeSuite =
 playSuite :: TestTree
 playSuite =
   testGroup
-    "Make"
-    [ testProperty "valid coord : places piece and change to next player" valid_coord,
+    "play"
+    [ testProperty "valid coord : initialises game" valid_coord,
+      testCase "game state: win - horizontal -" game_state_win_horizontal,
+      testCase "game state: win - vertical |" game_state_win_vertical,
+      testCase "game state: win - diagonal \\" game_state_win_diagonal_1,
+      testCase "game state: win - diagonal /" game_state_win_diagonal_2,
+      testCase "game state: playing" game_state_playing,
+      testCase "game state: draw" game_state_draw,
       testProperty "invalid coord : out of bounds records err on game" invalid_coord_out_of_bounds,
       testProperty "invalid coord : occupied records err on game" invalid_coord_occupied
     ]
@@ -72,6 +82,144 @@ playSuite =
         checkPlayerSwapped Game {player = p} = p == Player2
         checkNoError Game {err = e} = isNothing e
         check c g = checkPiecePlaced c g && checkPlayerSwapped g && checkNoError g
+
+    game_state_win_horizontal :: Assertion
+    game_state_win_horizontal = do
+      assertEqual "should be winning" Game.Win state
+      assertEqual "should have winner" (Just Game.Player1) winner
+      where
+        populatedBoard =
+          [ [Just X, Nothing, Just X],
+            [Nothing, Nothing, Nothing],
+            [Nothing, Nothing, Nothing]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player1,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 0 1)
+
+    game_state_win_vertical :: Assertion
+    game_state_win_vertical = do
+      assertEqual "should be winning" Game.Win state
+      assertEqual "should have winner" (Just Game.Player2) winner
+      where
+        populatedBoard =
+          [ [Nothing, Just O, Nothing],
+            [Nothing, Just O, Nothing],
+            [Nothing, Nothing, Nothing]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player2,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 2 1)
+
+    game_state_win_diagonal_1 :: Assertion
+    game_state_win_diagonal_1 = do
+      assertEqual "should be winning" Game.Win state
+      assertEqual "should have winner" (Just Game.Player2) winner
+      where
+        populatedBoard =
+          [ [Just O, Nothing, Nothing],
+            [Nothing, Just O, Nothing],
+            [Nothing, Nothing, Nothing]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player2,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 2 2)
+
+    game_state_win_diagonal_2 :: Assertion
+    game_state_win_diagonal_2 = do
+      assertEqual "should be winning" Game.Win state
+      assertEqual "should have winner" (Just Game.Player1) winner
+      where
+        populatedBoard =
+          [ [Nothing, Nothing, Just X],
+            [Nothing, Nothing, Nothing],
+            [Just X, Nothing, Nothing]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player1,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 1 1)
+
+    game_state_playing :: Assertion
+    game_state_playing = do
+      assertEqual "should be winning" Game.Playing state
+      assertEqual "should have winner" Nothing winner
+      where
+        populatedBoard =
+          [ [Just O, Nothing, Just X],
+            [Nothing, Nothing, Nothing],
+            [Just X, Nothing, Just O]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player2,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 2 1)
+
+    game_state_draw :: Assertion
+    game_state_draw = do
+      assertEqual "should be winning" Game.Draw state
+      assertEqual "should have winner" Nothing winner
+      where
+        populatedBoard =
+          [ [Just O, Just X, Just X],
+            [Nothing, Just O, Just O],
+            [Just X, Just O, Just X]
+          ]
+        Game {state, winner} =
+          Game.play
+            ( Game
+                { size = 3,
+                  board = populatedBoard,
+                  player = Game.Player1,
+                  err = Nothing,
+                  state = Game.Playing,
+                  winner = Nothing
+                }
+            )
+            (Types.Coord 1 0)
 
     invalid_coord_out_of_bounds :: Property
     invalid_coord_out_of_bounds =

@@ -44,5 +44,6 @@ test-suite test
       base >=4.7 && <5
     , tasty
     , tasty-quickcheck
+    , tasty-hunit
     , ttt
   default-language: GHC2021

@@ -1,5 +1,6 @@
-module Board (Board, BoardException (..), make, placePiece) where
+module Board (Board, BoardException (..), make, placePiece, extractLines, isFull) where
 
+import Data.List
 import Data.Maybe (isJust)
 import Types
 
@@ -37,3 +38,14 @@ existsOn Types.Coord {x, y} b
 
 isOccupiedOn :: (Eq a) => Types.Coord -> Board a -> Bool
 isOccupiedOn Types.Coord {x, y} b = isJust ((b !! x) !! y)
+
+extractLines :: Board a -> [[Maybe a]]
+extractLines b = rows ++ columns ++ diag1 ++ diag2
+  where
+    rows = b
+    columns = transpose rows
+    diag1 = transpose (zipWith drop [0 ..] rows)
+    diag2 = transpose (zipWith drop [0 ..] (map reverse rows))
+
+isFull :: (Eq a) => Board a -> Bool
+isFull = all (all isJust)
