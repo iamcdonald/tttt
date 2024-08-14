@@ -4,7 +4,7 @@ import Control.Exception (Exception, throw)
 import Data.Maybe
 import GameLogic.Board as Board
 import GameLogic.Game as Game
-import GameLogic.Types (Coord (..))
+import GameLogic.Types qualified as T
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
@@ -77,8 +77,8 @@ playSuite =
           let g = case (Game.make d) of
                 Left game -> game
                 Right _ -> throw ShouldReturnGame
-          return ((Coord x y), g)
-        checkPiecePlaced Coord {x, y} Game {board = b} = (b !! y !! x) == Just X
+          return ((T.Coord x y), g)
+        checkPiecePlaced (T.Coord x y) Game {board = b} = (b !! y !! x) == Just X
         checkPlayerSwapped Game {player = p} = p == Player2
         checkNoError Game {err = e} = isNothing e
         check c g = checkPiecePlaced c g && checkPlayerSwapped g && checkNoError g
@@ -104,7 +104,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 1 0)
+            (T.Coord 1 0)
 
     game_state_win_vertical :: Assertion
     game_state_win_vertical = do
@@ -127,7 +127,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 1 2)
+            (T.Coord 1 2)
 
     game_state_win_diagonal_1 :: Assertion
     game_state_win_diagonal_1 = do
@@ -150,7 +150,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 2 2)
+            (T.Coord 2 2)
 
     game_state_win_diagonal_2 :: Assertion
     game_state_win_diagonal_2 = do
@@ -173,7 +173,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 1 1)
+            (T.Coord 1 1)
 
     game_state_playing :: Assertion
     game_state_playing = do
@@ -196,7 +196,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 1 2)
+            (T.Coord 1 2)
 
     game_state_draw :: Assertion
     game_state_draw = do
@@ -219,7 +219,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 0 1)
+            (T.Coord 0 1)
 
     invalid_coord_out_of_bounds :: Property
     invalid_coord_out_of_bounds =
@@ -233,7 +233,7 @@ playSuite =
           let game = case (Game.make d) of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b
-          return ((Coord x y), game)
+          return ((T.Coord x y), game)
         checkError Game {err} = err == Just Board.InvalidBoardCoord
 
     invalid_coord_occupied :: Property
@@ -245,7 +245,7 @@ playSuite =
           d <- chooseInt (1, 10)
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
-          let c = (Coord x y)
+          let c = (T.Coord x y)
           let game = case (Game.make d) of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b

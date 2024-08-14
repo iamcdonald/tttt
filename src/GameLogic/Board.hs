@@ -1,20 +1,27 @@
-module GameLogic.Board (Board, BoardException (..), make, placePiece, extractLines, isFull) where
+module GameLogic.Board (Board, BoardException (..), Bounds(..), Bound(..), make, placePiece, extractLines, isFull, getBounds, getCoords) where
 
 import Data.List
 import Data.Maybe (isJust)
-import GameLogic.Types (Coord (..))
+import GameLogic.Types qualified as T
 
 type Board a = [[Maybe a]]
 
 data BoardException = InvalidBoardDimension | InvalidBoardCoord | CoordIsOccupied deriving (Eq, Show)
+
+data Bound = Bound {min :: Int, max :: Int}
+
+data Bounds = Bounds
+  { x :: Bound,
+    y :: Bound
+  }
 
 make :: (Eq a, Show a) => Int -> Either (Board a) BoardException
 make d
   | d > 0 = Left [[Nothing | _ <- [1 .. d]] | _ <- [1 .. d]]
   | otherwise = Right InvalidBoardDimension
 
-placePiece :: (Eq a) => Board a -> a -> Coord -> Either (Board a) BoardException
-placePiece board piece coord@Coord {x, y} =
+placePiece :: (Eq a) => Board a -> a -> T.Coord -> Either (Board a) BoardException
+placePiece board piece coord@(T.Coord x y) =
   case (exists, occupied) of
     (False, _) -> Right InvalidBoardCoord
     (_, True) -> Right CoordIsOccupied
@@ -28,16 +35,16 @@ replace n f l
   | n >= length l = l
   | otherwise = take n l ++ [f $ l !! n] ++ drop (n + 1) l
 
-existsOn :: Coord -> Board a -> Bool
-existsOn Coord {x, y} b
+existsOn :: T.Coord -> Board a -> Bool
+existsOn (T.Coord x y) b
   | x < 0 = False
   | y < 0 = False
   | y >= length b = False
   | x >= length (b !! y) = False
   | otherwise = True
 
-isOccupiedOn :: (Eq a) => Coord -> Board a -> Bool
-isOccupiedOn Coord {x, y} b = isJust ((b !! y) !! x)
+isOccupiedOn :: (Eq a) => T.Coord -> Board a -> Bool
+isOccupiedOn (T.Coord x y) b = isJust ((b !! y) !! x)
 
 extractLines :: Board a -> [[Maybe a]]
 extractLines b = rows ++ columns ++ diag1 ++ diag2
@@ -49,3 +56,24 @@ extractLines b = rows ++ columns ++ diag1 ++ diag2
 
 isFull :: (Eq a) => Board a -> Bool
 isFull = all (all isJust)
+
+getCoords :: Board a -> (Maybe a -> Bool) -> [T.Coord]
+getCoords board predicate =
+  [ (T.Coord x y)
+    | (y, row) <- zip [0 ..] board,
+      (x, entry) <- zip [0 ..] row,
+      predicate entry
+  ]
+
+getBounds :: Board a -> Bounds
+getBounds b =
+  foldl' asBounds intialBounds coords
+  where
+    (T.Coord x y):coords = getCoords b (\_ -> True)
+    asBounds :: Bounds -> T.Coord -> Bounds
+    intialBounds = (Bounds (Bound x x) (Bound y y))
+    asBounds (Bounds (Bound minX maxX) (Bound minY maxY)) (T.Coord x y) =
+      (Bounds
+        (Bound (minimum [minX, x]) (maximum [maxX, x]))
+        (Bound (minimum [minY, y]) (maximum [maxY, y]))
+      )

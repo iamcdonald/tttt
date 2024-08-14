@@ -3,7 +3,7 @@ module GameLogic.BoardTest (suite) where
 import Control.Exception (Exception, throw)
 import Data.Maybe
 import GameLogic.Board as Board
-import GameLogic.Types (Coord (..))
+import GameLogic.Types qualified as T
 import Test.Tasty
 import Test.Tasty.QuickCheck
 
@@ -64,7 +64,7 @@ placePieceSuite =
       testProperty "invalid coord : coord is already occupied" invalid_coord_occupied
     ]
   where
-    placePieceValidArgs :: Gen (Piece, Coord, Board Piece)
+    placePieceValidArgs :: Gen (Piece, T.Coord, Board Piece)
     placePieceValidArgs = do
       d <- chooseInt (1, 10)
       x <- chooseInt (0, d - 1)
@@ -73,7 +73,7 @@ placePieceSuite =
       let board = case (Board.make @Piece d) of
             Right _ -> throw ShouldReturnBoard
             Left b -> b
-      return (p, (Coord x y), board)
+      return (p, (T.Coord x y), board)
 
     valid_adds_at_correct_coord :: Property
     valid_adds_at_correct_coord =
@@ -82,7 +82,7 @@ placePieceSuite =
           Left board -> (getPiece c board) == Just p
           Right _ -> throw ShouldReturnBoard
       where
-        getPiece Coord {x, y} b = (b !! y !! x)
+        getPiece (T.Coord x y) b = (b !! y !! x)
 
     valid_adds_once :: Property
     valid_adds_once =
@@ -116,7 +116,7 @@ placePieceSuite =
           let board = case (Board.make @Piece d) of
                 Right _ -> throw ShouldReturnBoard
                 Left b -> b
-          return (p, (Coord x y), board)
+          return (p, (T.Coord x y), board)
 
     invalid_coord_occupied :: Property
     invalid_coord_occupied =
@@ -130,7 +130,7 @@ placePieceSuite =
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
           p <- elements [P, I, E, C]
-          let c = (Coord x y)
+          let c = (T.Coord x y)
           let initial = case (Board.make @Piece d) of
                 Right _ -> throw ShouldReturnBoard
                 Left b -> b
