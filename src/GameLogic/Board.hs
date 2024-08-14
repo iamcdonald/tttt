@@ -1,8 +1,8 @@
-module Board (Board, BoardException (..), make, placePiece, extractLines, isFull) where
+module GameLogic.Board (Board, BoardException (..), make, placePiece, extractLines, isFull) where
 
 import Data.List
 import Data.Maybe (isJust)
-import Types
+import GameLogic.Types (Coord (..))
 
 type Board a = [[Maybe a]]
 
@@ -13,8 +13,8 @@ make d
   | d > 0 = Left [[Nothing | _ <- [1 .. d]] | _ <- [1 .. d]]
   | otherwise = Right InvalidBoardDimension
 
-placePiece :: (Eq a) => Board a -> a -> Types.Coord -> Either (Board a) BoardException
-placePiece board piece coord@Types.Coord {x, y} =
+placePiece :: (Eq a) => Board a -> a -> Coord -> Either (Board a) BoardException
+placePiece board piece coord@Coord {x, y} =
   case (exists, occupied) of
     (False, _) -> Right InvalidBoardCoord
     (_, True) -> Right CoordIsOccupied
@@ -28,16 +28,16 @@ replace n f l
   | n >= length l = l
   | otherwise = take n l ++ [f $ l !! n] ++ drop (n + 1) l
 
-existsOn :: Types.Coord -> Board a -> Bool
-existsOn Types.Coord {x, y} b
+existsOn :: Coord -> Board a -> Bool
+existsOn Coord {x, y} b
   | x < 0 = False
   | y < 0 = False
   | x >= length b = False
   | y >= length (b !! x) = False
   | otherwise = True
 
-isOccupiedOn :: (Eq a) => Types.Coord -> Board a -> Bool
-isOccupiedOn Types.Coord {x, y} b = isJust ((b !! x) !! y)
+isOccupiedOn :: (Eq a) => Coord -> Board a -> Bool
+isOccupiedOn Coord {x, y} b = isJust ((b !! x) !! y)
 
 extractLines :: Board a -> [[Maybe a]]
 extractLines b = rows ++ columns ++ diag1 ++ diag2

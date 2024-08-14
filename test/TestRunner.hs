@@ -1,7 +1,7 @@
 module Main where
 
-import BoardTest
-import GameTest
+import GameLogic.BoardTest
+import GameLogic.GameTest
 import Test.Tasty (TestTree, defaultMain, testGroup)
 
 main :: IO ()
@@ -11,6 +11,6 @@ tests :: TestTree
 tests =
   testGroup
     "All Tests"
-    [ BoardTest.suite,
-      GameTest.suite
+    [ GameLogic.BoardTest.suite,
+      GameLogic.GameTest.suite
     ]

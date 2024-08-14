@@ -1,8 +1,8 @@
-module Game (Game (..), Player (..), GameState (..), Piece (..), Game.make, play) where
+module GameLogic.Game (Game (..), Player (..), GameState (..), Piece (..), make, play) where
 
-import Board
+import GameLogic.Board qualified as Board
 import Data.List
-import Types
+import GameLogic.Types (Coord (..))
 
 data Piece = X | O deriving (Eq, Show)
 
@@ -24,7 +24,7 @@ getPlayerPiece :: Player -> Piece
 getPlayerPiece Player1 = X
 getPlayerPiece Player2 = O
 
-make :: Int -> Either Game BoardException
+make :: Int -> Either Game Board.BoardException
 make size =
   case board of
     Left b -> Left Game {board = b, player = Player1, err = Nothing, state = Playing, size = size, winner = Nothing}
@@ -32,7 +32,7 @@ make size =
   where
     board = Board.make size
 
-play :: Game -> Types.Coord -> Game
+play :: Game -> Coord -> Game
 play g c =
   case nextBoard of
     Left nb -> do
