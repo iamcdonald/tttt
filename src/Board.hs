@@ -13,8 +13,8 @@ make d
   | d > 0 = Left [[Nothing | _ <- [1 .. d]] | _ <- [1 .. d]]
   | otherwise = Right InvalidBoardDimension
 
-placePiece :: (Eq a) => a -> Coord -> Board a -> Either (Board a) BoardException
-placePiece piece coord@Coord {x, y} board =
+placePiece :: (Eq a) => Board a -> a -> Coord -> Either (Board a) BoardException
+placePiece board piece coord@Coord {x, y} =
   case (exists, occupied) of
     (False, _) -> Right InvalidBoardCoord
     (_, True) -> Right CoordIsOccupied
