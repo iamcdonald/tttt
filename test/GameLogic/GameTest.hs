@@ -78,7 +78,7 @@ playSuite =
                 Left game -> game
                 Right _ -> throw ShouldReturnGame
           return ((Coord x y), g)
-        checkPiecePlaced Coord {x, y} Game {board = b} = (b !! x !! y) == Just X
+        checkPiecePlaced Coord {x, y} Game {board = b} = (b !! y !! x) == Just X
         checkPlayerSwapped Game {player = p} = p == Player2
         checkNoError Game {err = e} = isNothing e
         check c g = checkPiecePlaced c g && checkPlayerSwapped g && checkNoError g
@@ -104,7 +104,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 0 1)
+            (Coord 1 0)
 
     game_state_win_vertical :: Assertion
     game_state_win_vertical = do
@@ -127,7 +127,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 2 1)
+            (Coord 1 2)
 
     game_state_win_diagonal_1 :: Assertion
     game_state_win_diagonal_1 = do
@@ -196,7 +196,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 2 1)
+            (Coord 1 2)
 
     game_state_draw :: Assertion
     game_state_draw = do
@@ -219,7 +219,7 @@ playSuite =
                   winner = Nothing
                 }
             )
-            (Coord 1 0)
+            (Coord 0 1)
 
     invalid_coord_out_of_bounds :: Property
     invalid_coord_out_of_bounds =

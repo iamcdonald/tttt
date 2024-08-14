@@ -18,7 +18,7 @@ placePiece board piece coord@Coord {x, y} =
   case (exists, occupied) of
     (False, _) -> Right InvalidBoardCoord
     (_, True) -> Right CoordIsOccupied
-    (True, False) -> Left $ replace x (\r -> replace y (\_ -> Just piece) r) board
+    (True, False) -> Left $ replace y (\r -> replace x (\_ -> Just piece) r) board
   where
     exists = coord `existsOn` board
     occupied = coord `isOccupiedOn` board
@@ -32,12 +32,12 @@ existsOn :: Coord -> Board a -> Bool
 existsOn Coord {x, y} b
   | x < 0 = False
   | y < 0 = False
-  | x >= length b = False
-  | y >= length (b !! x) = False
+  | y >= length b = False
+  | x >= length (b !! y) = False
   | otherwise = True
 
 isOccupiedOn :: (Eq a) => Coord -> Board a -> Bool
-isOccupiedOn Coord {x, y} b = isJust ((b !! x) !! y)
+isOccupiedOn Coord {x, y} b = isJust ((b !! y) !! x)
 
 extractLines :: Board a -> [[Maybe a]]
 extractLines b = rows ++ columns ++ diag1 ++ diag2

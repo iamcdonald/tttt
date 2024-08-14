@@ -82,7 +82,7 @@ placePieceSuite =
           Left board -> (getPiece c board) == Just p
           Right _ -> throw ShouldReturnBoard
       where
-        getPiece Coord {x, y} b = (b !! x !! y)
+        getPiece Coord {x, y} b = (b !! y !! x)
 
     valid_adds_once :: Property
     valid_adds_once =
@@ -103,12 +103,12 @@ placePieceSuite =
 
     invalid_coord_out_of_bounds :: Property
     invalid_coord_out_of_bounds =
-      forAll occupiedArgs $
+      forAll outOfBoundArgs $
         \(p, c, b) -> case (Board.placePiece b p c) of
           Left _ -> throw ShouldReturnBoardException
           Right err -> err == InvalidBoardCoord
       where
-        occupiedArgs = do
+        outOfBoundArgs = do
           d <- chooseInt (1, 10)
           x <- chooseInt (11, 20)
           y <- chooseInt (0, d)
@@ -120,12 +120,12 @@ placePieceSuite =
 
     invalid_coord_occupied :: Property
     invalid_coord_occupied =
-      forAll outOfBoundArgs $
+      forAll occupiedArgs $
         \(p, c, b) -> case (Board.placePiece b p c) of
           Left _ -> throw ShouldReturnBoardException
           Right err -> err == CoordIsOccupied
       where
-        outOfBoundArgs = do
+        occupiedArgs = do
           d <- chooseInt (1, 10)
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
