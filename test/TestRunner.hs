@@ -1,6 +1,7 @@
 module Main where
 
 import BoardTest
+import GameTest
 import Test.Tasty (TestTree, defaultMain, testGroup)
 
 main :: IO ()
@@ -10,5 +11,6 @@ tests :: TestTree
 tests =
   testGroup
     "All Tests"
-    [ BoardTest.suite
+    [ BoardTest.suite,
+      GameTest.suite
     ]
