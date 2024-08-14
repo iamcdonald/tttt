@@ -1,11 +1,12 @@
 module GameTest (suite) where
 
-import Board (BoardException (..), Coord (..))
+import Board (BoardException (..))
 import Control.Exception (Exception, throw)
 import Data.Maybe
 import Game
 import Test.Tasty
 import Test.Tasty.QuickCheck
+import Types
 
 data ShouldReturnException = ShouldReturnGame | ShouldReturnException deriving (Eq, Show)
 
@@ -66,8 +67,8 @@ playSuite =
           let g = case (Game.make d) of
                 Left game -> game
                 Right _ -> throw ShouldReturnGame
-          return ((Board.Coord x y), g)
-        checkPiecePlaced Board.Coord {x, y} Game {board = b} = (b !! x !! y) == Just X
+          return ((Types.Coord x y), g)
+        checkPiecePlaced Types.Coord {x, y} Game {board = b} = (b !! x !! y) == Just X
         checkPlayerSwapped Game {player = p} = p == Player2
         checkNoError Game {err = e} = isNothing e
         check c g = checkPiecePlaced c g && checkPlayerSwapped g && checkNoError g
@@ -84,7 +85,7 @@ playSuite =
           let game = case (Game.make d) of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b
-          return ((Board.Coord x y), game)
+          return ((Types.Coord x y), game)
         checkError Game {err} = err == Just Board.InvalidBoardCoord
 
     invalid_coord_occupied :: Property
@@ -96,7 +97,7 @@ playSuite =
           d <- chooseInt (1, 10)
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
-          let c = (Board.Coord x y)
+          let c = (Types.Coord x y)
           let game = case (Game.make d) of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b

@@ -1,6 +1,7 @@
 module Game where
 
 import Board
+import Types
 
 data Piece = X | O deriving (Eq, Show)
 
@@ -20,7 +21,7 @@ make size =
   where
     board = Board.make size
 
-play :: Game -> Board.Coord -> Game
+play :: Game -> Types.Coord -> Game
 play g c =
   case nextBoard of
     Left nb -> g {board = nb, player = nextPlayer}
