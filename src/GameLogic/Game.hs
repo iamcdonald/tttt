@@ -1,4 +1,4 @@
-module GameLogic.Game (Game (..), Player (..), GameState (..), Piece (..), make, play) where
+module GameLogic.Game (Game (..), Player (..), GameState (..), Piece (..), make, play, getPlayerPiece) where
 
 import GameLogic.Board qualified as Board
 import Data.List

@@ -3,6 +3,7 @@ module Main where
 import GameLogic.BoardTest
 import GameLogic.GameTest
 import Test.Tasty (TestTree, defaultMain, testGroup)
+import UI.RendererTest
 import UI.StateTest
 
 main :: IO ()
@@ -14,5 +15,6 @@ tests =
     "All Tests"
     [ GameLogic.BoardTest.suite,
       GameLogic.GameTest.suite,
-      UI.StateTest.suite
+      UI.StateTest.suite,
+      UI.RendererTest.suite
     ]

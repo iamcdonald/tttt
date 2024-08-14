@@ -17,7 +17,7 @@ common warnings
     ghc-options: -Wall
 
 library ttt
-    exposed-modules: GameLogic.Board GameLogic.Game GameLogic.Types UI.State
+    exposed-modules: GameLogic.Board GameLogic.Game GameLogic.Types UI.State UI.Renderer
     ghc-options: -Wall
     build-depends: base ^>=4.17.2.1
     hs-source-dirs:   src
@@ -36,7 +36,7 @@ executable tic-tac-toe
 test-suite test
   type: exitcode-stdio-1.0
   main-is: TestRunner.hs
-  other-modules: GameLogic.BoardTest GameLogic.GameTest UI.StateTest
+  other-modules: GameLogic.BoardTest GameLogic.GameTest UI.StateTest UI.RendererTest
   hs-source-dirs:
       test
   ghc-options: -Wall
