@@ -43,12 +43,14 @@ bounded b (T.Coord x y) =
       | otherwise = y
 
 moveCursor :: Board a -> State -> Command -> State
-moveCursor b s@State {cursor = c@(T.Coord x y)} cmd
+moveCursor b s cmd
   | cmd == UI.State.Up = asState s c {T.y = y - 1}
   | cmd == UI.State.Down = asState s c {T.y = y + 1}
   | cmd == UI.State.Left = asState s c {T.x = x - 1}
-  | cmd == UI.State.Right = asState s c {T.x = x + 1}
+  | otherwise = asState s c {T.x = x + 1}
   where
+    c = cursor s
+    (x,y) = (T.x c, T.y c)
     asState state uc =
       state {cursor = checkAvailable $ bounded b uc}
       where

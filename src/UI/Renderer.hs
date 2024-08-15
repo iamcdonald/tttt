@@ -90,18 +90,19 @@ renderPlayer p withPiece
       Game.Player2 -> "Player 2"
 
 renderGame :: (State, Game.Game) -> [Char]
-renderGame (state, Game.Game{Game.board = board, Game.player = player, Game.state = gameState, Game.winner = winner, Game.err = error })
-  | gameState == Game.Playing = case error of
+renderGame (state, game)
+  | gameState == Game.Playing = case err of
       Just _ -> (b True) ++ p ++ "\n" ++ e
       Nothing -> (b True) ++ p
   | gameState == Game.Win = (b False) ++ "Game Over\nWinner -> " ++ w
-  | gameState == Game.Draw = (b False) ++ "Game Over\nDraw!"
+  | otherwise = (b False) ++ "Game Over\nDraw!"
   where
+    Game.Game{Game.board = board, Game.player = player, Game.state = gameState, Game.winner = winner, Game.err = err } = game
     b = renderBoard (state, board)
     p = renderPlayer player True
     e
-      | error == Just CoordIsOccupied = "board position is occupied!"
-      | error == Just InvalidBoardCoord = "board position does not exist!"
+      | err == Just CoordIsOccupied = "board position is occupied!"
+      | err == Just InvalidBoardCoord = "board position does not exist!"
       | otherwise = ""
     w = case winner of
         Nothing -> "Unknown Player"
