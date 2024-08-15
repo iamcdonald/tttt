@@ -6,7 +6,7 @@ import Data.List (minimumBy)
 import Data.Maybe (isNothing)
 import Data.Ord (comparing)
 
-data Command = Up | Down | Left | Right deriving (Eq, Show)
+data Command = CommandUp | CommandDown | CommandLeft | CommandRight deriving (Eq, Show)
 
 newtype State = State
   { cursor :: T.Coord
@@ -44,9 +44,9 @@ bounded b (T.Coord x y) =
 
 moveCursor :: Board a -> State -> Command -> State
 moveCursor b s cmd
-  | cmd == UI.State.Up = asState s c {T.y = y - 1}
-  | cmd == UI.State.Down = asState s c {T.y = y + 1}
-  | cmd == UI.State.Left = asState s c {T.x = x - 1}
+  | cmd == UI.State.CommandUp = asState s c {T.y = y - 1}
+  | cmd == UI.State.CommandDown = asState s c {T.y = y + 1}
+  | cmd == UI.State.CommandLeft = asState s c {T.x = x - 1}
   | otherwise = asState s c {T.x = x + 1}
   where
     c = cursor s

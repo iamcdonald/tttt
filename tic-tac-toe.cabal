@@ -17,7 +17,7 @@ common warnings
     ghc-options: -Wall
 
 library ttt
-    exposed-modules: GameLogic.Board GameLogic.Game GameLogic.Types UI.State UI.Renderer
+    exposed-modules: GameLogic.Board GameLogic.Game GameLogic.Types UI.State UI.Renderer UI.Input
     ghc-options: -Wall
     build-depends: base ^>=4.17.2.1
     hs-source-dirs:   src
@@ -26,7 +26,7 @@ library ttt
 executable tic-tac-toe
     import:           warnings
     main-is:          Main.hs
-    ghc-options: -Wall
+    ghc-options: -Wall -Wno-missing-home-modules
     build-depends:
         base ^>=4.17.2.1
       , ttt

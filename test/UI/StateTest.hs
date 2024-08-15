@@ -35,31 +35,31 @@ moveCursorSuite =
     emptyBoard = [[Nothing | _ <- [1 :: Int .. 3]] | _ <- [1 :: Int .. 3]]
     move_cursor_up :: Assertion
     move_cursor_up =
-      assertEqual "moves up" (Coord 1 0) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.Up
+      assertEqual "moves up" (Coord 1 0) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.CommandUp
 
     move_cursor_down :: Assertion
     move_cursor_down =
-      assertEqual "moves down" (Coord 1 2) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.Down
+      assertEqual "moves down" (Coord 1 2) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.CommandDown
 
     move_cursor_left :: Assertion
     move_cursor_left =
-      assertEqual "moves left" (Coord 0 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.Left
+      assertEqual "moves left" (Coord 0 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.CommandLeft
 
     move_cursor_right :: Assertion
     move_cursor_right =
-      assertEqual "moves right" (Coord 2 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.Right
+      assertEqual "moves right" (Coord 2 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 1)) State.CommandRight
 
     move_cursor_up_out_of_bounds :: Assertion
-    move_cursor_up_out_of_bounds = assertEqual "loops" (Coord 1 2) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 0)) State.Up
+    move_cursor_up_out_of_bounds = assertEqual "loops" (Coord 1 2) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 0)) State.CommandUp
 
     move_cursor_down_out_of_bounds :: Assertion
-    move_cursor_down_out_of_bounds = assertEqual "loops" (Coord 1 0) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 2)) State.Down
+    move_cursor_down_out_of_bounds = assertEqual "loops" (Coord 1 0) $ cursor $ State.moveCursor emptyBoard (State (Coord 1 2)) State.CommandDown
 
     move_cursor_left_out_of_bounds :: Assertion
-    move_cursor_left_out_of_bounds = assertEqual "loops" (Coord 2 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 0 1)) State.Left
+    move_cursor_left_out_of_bounds = assertEqual "loops" (Coord 2 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 0 1)) State.CommandLeft
 
     move_cursor_right_out_of_bounds :: Assertion
-    move_cursor_right_out_of_bounds = assertEqual "loops" (Coord 0 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 2 1)) State.Right
+    move_cursor_right_out_of_bounds = assertEqual "loops" (Coord 0 1) $ cursor $ State.moveCursor emptyBoard (State (Coord 2 1)) State.CommandRight
 
     board =
       [ [Nothing, Just L, Nothing],
@@ -69,16 +69,16 @@ moveCursorSuite =
 
     move_cursor_up_choose_nearest_available_coord_if_occupied :: Assertion
     move_cursor_up_choose_nearest_available_coord_if_occupied =
-      assertEqual "loops" (Coord 0 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.Up
+      assertEqual "loops" (Coord 0 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.CommandUp
 
     move_cursor_down_choose_nearest_available_coord_if_occupied :: Assertion
     move_cursor_down_choose_nearest_available_coord_if_occupied =
-      assertEqual "loops" (Coord 0 2) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.Down
+      assertEqual "loops" (Coord 0 2) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.CommandDown
 
     move_cursor_left_choose_nearest_available_coord_if_occupied :: Assertion
     move_cursor_left_choose_nearest_available_coord_if_occupied =
-      assertEqual "loops" (Coord 0 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.Left
+      assertEqual "loops" (Coord 0 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.CommandLeft
 
     move_cursor_right_choose_nearest_available_coord_if_occupied :: Assertion
     move_cursor_right_choose_nearest_available_coord_if_occupied =
-      assertEqual "loops" (Coord 2 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.Right
+      assertEqual "loops" (Coord 2 0) $ cursor $ State.moveCursor board (State (Coord 1 1)) State.CommandRight
