@@ -74,10 +74,10 @@ playSuite =
           d <- chooseInt (1, 10)
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
-          let g = case (Game.make d) of
+          let g = case Game.make d of
                 Left game -> game
                 Right _ -> throw ShouldReturnGame
-          return ((T.Coord x y), g)
+          return (T.Coord x y, g)
         checkPiecePlaced (T.Coord x y) Game {board = b} = (b !! y !! x) == Just X
         checkPlayerSwapped Game {player = p} = p == Player2
         checkNoError Game {err = e} = isNothing e
@@ -230,10 +230,10 @@ playSuite =
           d <- chooseInt (1, 10)
           x <- chooseInt (11, 20)
           y <- chooseInt (0, d)
-          let game = case (Game.make d) of
+          let game = case Game.make d of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b
-          return ((T.Coord x y), game)
+          return (T.Coord x y, game)
         checkError Game {err} = err == Just Board.InvalidBoardCoord
 
     invalid_coord_occupied :: Property
@@ -245,8 +245,8 @@ playSuite =
           d <- chooseInt (1, 10)
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
-          let c = (T.Coord x y)
-          let game = case (Game.make d) of
+          let c = T.Coord x y
+          let game = case Game.make d of
                 Right _ -> throw ShouldReturnGame
                 Left b -> b
           let played = Game.play game c

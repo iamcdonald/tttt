@@ -3,8 +3,8 @@ module UI.Renderer where
 import Data.Maybe (fromJust, isJust)
 import GameLogic.Board
 import GameLogic.Game qualified as Game
-import UI.State
 import GameLogic.Types qualified as T
+import UI.State
 
 data Position = Top | Middle | Bottom
 
@@ -53,7 +53,7 @@ wrapRow pos row =
 
 renderRow :: (Show a) => (Position, [Cell a]) -> [Char]
 renderRow (pos, row) =
-  wrapRow pos (concatMap renderCell row)
+  wrapRow pos $ concatMap renderCell row
 
 getRowPosition :: Int -> Int -> Position
 getRowPosition idx len
@@ -68,7 +68,7 @@ withRowPosition grid =
     gl = length grid
 
 renderBoard :: (Show a) => (UI.State.State, Board a) -> Bool -> [Char]
-renderBoard (UI.State.State{cursor}, board) showCursor = do
+renderBoard (UI.State.State {cursor}, board) showCursor = do
   concatMap renderRow (withRowPosition grid)
   where
     isActive = (== cursor)
@@ -81,7 +81,7 @@ renderBoard (UI.State.State{cursor}, board) showCursor = do
 
 renderPlayer :: Game.Player -> Bool -> [Char]
 renderPlayer p withPiece
-  | withPiece == True = player ++ " : " ++ piece
+  | withPiece = player ++ " : " ++ piece
   | otherwise = player
   where
     piece = show $ Game.getPlayerPiece p
@@ -92,18 +92,18 @@ renderPlayer p withPiece
 renderGame :: (State, Game.Game) -> [Char]
 renderGame (state, game)
   | gameState == Game.Playing = case err of
-      Just _ -> (b True) ++ p ++ "\n" ++ e
-      Nothing -> (b True) ++ p
-  | gameState == Game.Win = (b False) ++ "Game Over\nWinner -> " ++ w
-  | otherwise = (b False) ++ "Game Over\nDraw!"
+      Just _ -> rb True ++ p ++ "\n" ++ e
+      Nothing -> rb True ++ p
+  | gameState == Game.Win = rb False ++ "Game Over\nWinner -> " ++ w
+  | otherwise = rb False ++ "Game Over\nDraw!"
   where
-    Game.Game{Game.board = board, Game.player = player, Game.state = gameState, Game.winner = winner, Game.err = err } = game
-    b = renderBoard (state, board)
+    Game.Game {Game.board = board, Game.player = player, Game.state = gameState, Game.winner = winner, Game.err = err} = game
+    rb = renderBoard (state, board)
     p = renderPlayer player True
     e
       | err == Just CoordIsOccupied = "board position is occupied!"
       | err == Just InvalidBoardCoord = "board position does not exist!"
       | otherwise = ""
     w = case winner of
-        Nothing -> "Unknown Player"
-        Just wi -> renderPlayer wi False
+      Nothing -> "Unknown Player"
+      Just wi -> renderPlayer wi False

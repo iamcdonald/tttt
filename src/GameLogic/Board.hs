@@ -1,16 +1,17 @@
-module GameLogic.Board (Board, BoardException (..), Bounds(..), Bound(..), make, placePiece, extractLines, isFull, getBounds, getCoords) where
+module GameLogic.Board (Board, BoardException (..), Bounds (..), Bound (..), make, placePiece, extractLines, isFull, getBounds, getCoords) where
 
+import Control.Exception (Exception)
 import Data.List
 import Data.Maybe (isJust)
 import GameLogic.Types qualified as T
-import Control.Exception (Exception)
 
 type Board a = [[Maybe a]]
 
 data BoardException = InvalidBoardDimension | InvalidBoardCoord | CoordIsOccupied deriving (Eq, Show)
+
 instance Exception BoardException
 
-data Bound = Bound {min :: Int, max :: Int}
+data Bound = Bound {_min :: Int, _max :: Int}
 
 data Bounds = Bounds
   { x :: Bound,
@@ -61,7 +62,7 @@ isFull = all (all isJust)
 
 getCoords :: Board a -> (Maybe a -> Bool) -> [T.Coord]
 getCoords board predicate =
-  [ (T.Coord x y)
+  [ T.Coord x y
     | (y, row) <- zip [0 ..] board,
       (x, entry) <- zip [0 ..] row,
       predicate entry
@@ -70,13 +71,12 @@ getCoords board predicate =
 getBounds :: Board a -> Bounds
 getBounds b =
   case coords of
-    [] -> (Bounds (Bound 0 0) (Bound 0 0))
-    [(T.Coord x y)] -> (Bounds (Bound x x) (Bound y y))
-    ((T.Coord x y):cs) -> foldl' asBounds (Bounds (Bound x x) (Bound y y)) cs
+    [] -> Bounds (Bound 0 0) (Bound 0 0)
+    [T.Coord x y] -> Bounds (Bound x x) (Bound y y)
+    ((T.Coord x y) : cs) -> foldl' asBounds (Bounds (Bound x x) (Bound y y)) cs
   where
     coords = getCoords b (\_ -> True)
     asBounds (Bounds (Bound minX maxX) (Bound minY maxY)) (T.Coord ax ay) =
-      (Bounds
-        (Bound (minimum [minX, ax]) (maximum [maxX, ax]))
-        (Bound (minimum [minY, ay]) (maximum [maxY, ay]))
-      )
+      Bounds
+        (Bound (min minX ax) (max maxX ax))
+        (Bound (min minY ay) (max maxY ay))

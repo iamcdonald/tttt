@@ -46,8 +46,8 @@ makeSuite =
 
     invalid_dimension :: Int -> Property
     invalid_dimension d =
-      (d <= 0)
-        ==> case b of
+      (d <= 0) ==>
+        case b of
           Left _ -> throw ShouldReturnBoardException
           Right err -> err == InvalidBoardDimension
       where
@@ -70,33 +70,33 @@ placePieceSuite =
       x <- chooseInt (0, d - 1)
       y <- chooseInt (0, d - 1)
       p <- elements [P, I, E, C]
-      let board = case (Board.make @Piece d) of
+      let board = case Board.make @Piece d of
             Right _ -> throw ShouldReturnBoard
             Left b -> b
-      return (p, (T.Coord x y), board)
+      return (p, T.Coord x y, board)
 
     valid_adds_at_correct_coord :: Property
     valid_adds_at_correct_coord =
       forAll placePieceValidArgs $
-        \(p, c, b) -> case (Board.placePiece b p c) of
-          Left board -> (getPiece c board) == Just p
+        \(p, c, b) -> case Board.placePiece b p c of
+          Left board -> getPiece c board == Just p
           Right _ -> throw ShouldReturnBoard
       where
-        getPiece (T.Coord x y) b = (b !! y !! x)
+        getPiece (T.Coord x y) b = b !! y !! x
 
     valid_adds_once :: Property
     valid_adds_once =
       forAll placePieceValidArgs $
-        \(p, c, b) -> (countPieces $ Board.placePiece b p c) == 1
+        \(p, c, b) -> countPieces (Board.placePiece b p c) == 1
       where
         countPieces (Right _) = throw ShouldReturnBoard
-        countPieces (Left b) = length $ filter isJust $ concat b
+        countPieces (Left b) = length $ concatMap (filter isJust) b
 
     valid_does_not_alter_board_dimensions :: Property
     valid_does_not_alter_board_dimensions =
       forAll placePieceValidArgs $
-        \(p, c, b) -> case (Board.placePiece b p c) of
-          Left nb -> (countSpaces nb) == (countSpaces b)
+        \(p, c, b) -> case Board.placePiece b p c of
+          Left nb -> countSpaces nb == countSpaces b
           Right _ -> throw ShouldReturnBoard
       where
         countSpaces b = length $ concat b
@@ -104,7 +104,7 @@ placePieceSuite =
     invalid_coord_out_of_bounds :: Property
     invalid_coord_out_of_bounds =
       forAll outOfBoundArgs $
-        \(p, c, b) -> case (Board.placePiece b p c) of
+        \(p, c, b) -> case Board.placePiece b p c of
           Left _ -> throw ShouldReturnBoardException
           Right err -> err == InvalidBoardCoord
       where
@@ -113,15 +113,15 @@ placePieceSuite =
           x <- chooseInt (11, 20)
           y <- chooseInt (0, d)
           p <- elements [P, I, E, C]
-          let board = case (Board.make @Piece d) of
+          let board = case Board.make @Piece d of
                 Right _ -> throw ShouldReturnBoard
                 Left b -> b
-          return (p, (T.Coord x y), board)
+          return (p, T.Coord x y, board)
 
     invalid_coord_occupied :: Property
     invalid_coord_occupied =
       forAll occupiedArgs $
-        \(p, c, b) -> case (Board.placePiece b p c) of
+        \(p, c, b) -> case Board.placePiece b p c of
           Left _ -> throw ShouldReturnBoardException
           Right err -> err == CoordIsOccupied
       where
@@ -130,11 +130,11 @@ placePieceSuite =
           x <- chooseInt (0, d - 1)
           y <- chooseInt (0, d - 1)
           p <- elements [P, I, E, C]
-          let c = (T.Coord x y)
-          let initial = case (Board.make @Piece d) of
+          let c = T.Coord x y
+          let initial = case Board.make @Piece d of
                 Right _ -> throw ShouldReturnBoard
                 Left b -> b
-          let played = case (Board.placePiece initial p c) of
+          let played = case Board.placePiece initial p c of
                 Right _ -> throw ShouldReturnBoard
                 Left b -> b
           return (p, c, played)

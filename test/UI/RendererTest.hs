@@ -1,9 +1,9 @@
 module UI.RendererTest (suite) where
 
 import Data.List (intercalate)
-import GameLogic.Types qualified as T
-import GameLogic.Game
 import GameLogic.Board
+import GameLogic.Game
+import GameLogic.Types qualified as T
 import Test.Tasty
 import Test.Tasty.HUnit
 import UI.Renderer as Renderer
@@ -31,7 +31,7 @@ renderBoardSuite =
     render_board =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderBoard (state, board) False)
       where
-        state = UI.State.State {cursor = (T.Coord 2 0)}
+        state = UI.State.State {cursor = T.Coord 2 0}
         board =
           [ [Just L, Just P, Nothing],
             [Just P, Nothing, Just P],
@@ -52,7 +52,7 @@ renderBoardSuite =
     render_board_with_cursor =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderBoard (state, board) True)
       where
-        state = UI.State.State {cursor = (T.Coord 2 0)}
+        state = UI.State.State {cursor = T.Coord 2 0}
         board =
           [ [Just L, Just P, Nothing],
             [Just P, Nothing, Just P],
@@ -69,7 +69,6 @@ renderBoardSuite =
             ""
           ]
 
-
 renderGameSuite :: TestTree
 renderGameSuite =
   testGroup
@@ -84,13 +83,13 @@ renderGameSuite =
     render_game_playing =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderGame (state, game))
       where
-        state = UI.State.State {cursor = (T.Coord 2 0)}
+        state = UI.State.State {cursor = T.Coord 2 0}
         board =
           [ [Just X, Just O, Nothing],
             [Just O, Just X, Just O],
             [Just X, Just X, Just O]
           ]
-        game = Game{ size = 3, board = board, player = Player1, err = Nothing, winner = Nothing, state = Playing}
+        game = Game {size = 3, board = board, player = Player1, err = Nothing, winner = Nothing, state = Playing}
         expected =
           [ "┌───┬───┬───┐",
             "│ X │ O │ . │",
@@ -106,13 +105,13 @@ renderGameSuite =
     render_game_win =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderGame (state, game))
       where
-        state = UI.State.State {cursor = (T.Coord 0 1)}
+        state = UI.State.State {cursor = T.Coord 0 1}
         board =
           [ [Just O, Just X, Nothing],
             [Nothing, Just O, Just X],
             [Just X, Just O, Just O]
           ]
-        game = Game{ size = 3, board = board, player = Player2, err = Nothing, winner = Just Player2, state = Win}
+        game = Game {size = 3, board = board, player = Player2, err = Nothing, winner = Just Player2, state = Win}
         expected =
           [ "┌───┬───┬───┐",
             "│ O │ X │   │",
@@ -129,13 +128,13 @@ renderGameSuite =
     render_game_draw =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderGame (state, game))
       where
-        state = UI.State.State {cursor = (T.Coord 0 1)}
+        state = UI.State.State {cursor = T.Coord 0 1}
         board =
           [ [Just O, Just X, Just X],
             [Just O, Just X, Just X],
             [Just X, Just O, Just O]
           ]
-        game = Game{ size = 3, board = board, player = Player2, err = Nothing, winner = Nothing, state = Draw}
+        game = Game {size = 3, board = board, player = Player2, err = Nothing, winner = Nothing, state = Draw}
         expected =
           [ "┌───┬───┬───┐",
             "│ O │ X │ X │",
@@ -152,13 +151,13 @@ renderGameSuite =
     render_game_playing_error =
       assertEqual "render board" (intercalate "\n" expected) (Renderer.renderGame (state, game))
       where
-        state = UI.State.State {cursor = (T.Coord 1 1)}
+        state = UI.State.State {cursor = T.Coord 1 1}
         board =
           [ [Nothing, Just X, Just X],
             [Just O, Nothing, Just X],
             [Just X, Just O, Just O]
           ]
-        game = Game{ size = 3, board = board, player = Player2, err = Just CoordIsOccupied, winner = Nothing, state = Playing}
+        game = Game {size = 3, board = board, player = Player2, err = Just CoordIsOccupied, winner = Nothing, state = Playing}
         expected =
           [ "┌───┬───┬───┐",
             "│   │ X │ X │",
